@@ -1315,6 +1315,6 @@ def realizar_analisis_general(fecha):
         conn.commit()
         print(" analisis general completado")
 
-ciclo_scraping3()
+ciclo_scraping2()
 
 
