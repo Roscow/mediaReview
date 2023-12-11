@@ -1156,9 +1156,29 @@ def ciclo_scraping2():
     tiempo_fin = time.time()
     tiempo_total = tiempo_fin - tiempo_inicio
     #consultar
-    
+    realizar_analisis_general(fecha)
+    print(f"tiempo transcurrido: {tiempo_total}")
 
-
+def ciclo_scraping3():
+    codigo_ejecutar = list()
+    fecha = datetime.now()
+    tiempo_inicio = time.time()
+    for e in range(1):
+        codigo_ejecutar.append(e)
+    while(len(codigo_ejecutar)>0 ):
+        print(f"codigo a ejecutar: {codigo_ejecutar}")
+        sleep(3)
+        #recorrer el arreglo
+        if(0 in codigo_ejecutar):
+            datos= scraping_t13()
+            if(verificar_integridad(datos,fecha)==False):
+                eliminar_datos_posibles(datos,fecha)
+                insertar_data(datos)
+            else:
+                codigo_ejecutar.remove(0)
+    tiempo_fin = time.time()
+    tiempo_total = tiempo_fin - tiempo_inicio
+    #consultar
     realizar_analisis_general(fecha)
     print(f"tiempo transcurrido: {tiempo_total}")
 
@@ -1238,14 +1258,16 @@ def realizar_analisis_general(fecha):
     print("realizando analisis general")
     conn = conectar_bd()
     cursor = conn.cursor()
-
+    cadena_fecha = fecha.strftime("%Y-%m-%d %H:%M:%S")
+    fecha_date , fecha_time = cadena_fecha.split(' ')
+    fecha=fecha_date
     #ver si existe
-    cursor.execute(f"Select id from analisis_general where fecha={fecha};")
+    cursor.execute(f"Select id from analisis_general where fecha='{fecha}';")
     resultados = cursor.fetchall()
-    id_analisis = resultados[0][0]
     subconsulta_medio_diario =(f"SELECT id FROM medio_diario WHERE fecha= '{fecha}'")
     # Verificar si hay resultados
     if resultados:  
+        id_analisis = resultados[0]
         print("analisis ya existe para esa fecha")
         cursor.execute(f"delete from analisis_general where id={id_analisis};")
         print("se elimino registro existente")
@@ -1293,6 +1315,6 @@ def realizar_analisis_general(fecha):
         conn.commit()
         print(" analisis general completado")
 
-ciclo_scraping2()
+ciclo_scraping3()
 
 
