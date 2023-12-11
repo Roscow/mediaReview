@@ -110,575 +110,619 @@ def insertar_data(dic):
         print(f"Error durante insertar data: {e}")
 
 def scraping_t13():   
-    limpiar_pantalla()
-    print("Iniciando scraping t13")
-    driver = webdriver.Firefox(options=options)
-    url = "https://www.t13.cl"
-    driver.get(url)
-    sleep(30)
-    html_content = driver.page_source
-    soup = BeautifulSoup(html_content, 'html.parser')
-    card__title_list = soup.find_all('h2', class_='vertical-card__title')
-    card__title_list2 = soup.find_all('h3', class_='vertical-card__title')
-    card__title_list3 = soup.find_all('h4', class_='vertical-card__title')
-    titulares = list()
-    for e in card__title_list2:
-        titulares.append(e.text)
-    for e in card__title_list:
-        titulares.append(e.text)
-    for e in card__title_list3:
-        titulares.append(e.text)
-    driver.quit()
-    print(f"total : {len(titulares)}")
-    print("finalizando scraping")
-    sleep(10)
-    datos_obtenidos= len(titulares)
-    titulares = verificar_listado(titulares)
-    dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
-    return dic
+    try:
+        limpiar_pantalla()
+        print("Iniciando scraping t13")
+        driver = webdriver.Firefox(options=options)
+        url = "https://www.t13.cl"
+        driver.get(url)
+        sleep(30)
+        html_content = driver.page_source
+        soup = BeautifulSoup(html_content, 'html.parser')
+        card__title_list = soup.find_all('h2', class_='vertical-card__title')
+        card__title_list2 = soup.find_all('h3', class_='vertical-card__title')
+        card__title_list3 = soup.find_all('h4', class_='vertical-card__title')
+        titulares = list()
+        for e in card__title_list2:
+            titulares.append(e.text)
+        for e in card__title_list:
+            titulares.append(e.text)
+        for e in card__title_list3:
+            titulares.append(e.text)
+        driver.quit()
+        print(f"total : {len(titulares)}")
+        print("finalizando scraping")
+        sleep(10)
+        datos_obtenidos= len(titulares)
+        titulares = verificar_listado(titulares)
+        dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
+        return dic
+    except Exception as e:
+        print(f"no se pudo hacer scraping en t13 por {e}")
 
 def scraping_cooperativa():
-    limpiar_pantalla()
-    print("Iniciando scraping cooperativa")
-    driver = webdriver.Firefox(options=options)
-    url = "https://cooperativa.cl/"
-    driver.get(url)
-    sleep(30)
-    html_content = driver.page_source
-    soup = BeautifulSoup(html_content, 'html.parser')
-    titulares = list()
-    card__title_list1 = soup.find_all('h1', class_='titular-noticia')
-    for e in card__title_list1:
-        titulares.append(e.text)
-    card__title_list3 = soup.find_all('h3', class_='titular-noticia')
-    for e in card__title_list3:
-        titulares.append(e.text)
-    card__title_list4 = soup.find_all('div', class_='texto-titular')
-    for e in card__title_list4:
-        titulares.append(e.text)
-    card__title_list5 = soup.find_all('div', class_='titulo-ple')
-    for e in card__title_list5:
-        titulares.append(e.text)
-    card__title_list6 = soup.find_all('h3', class_='texto-titular')
-    for e in card__title_list6:
-        titulares.append(e.text)
-    container = soup.find('div', class_='container-cooperativaciencia')
-    card__title_list8 = container.find_all('div', class_='card')
-    for e in card__title_list8:
-        tit = e.find('span')
-        titulares.append(tit.text.strip())
-    card__title_list10 = soup.find_all('h3', class_='titular-texto')
-    for e in card__title_list10:
-        titulares.append(e.text)
-    card__title_list11 = soup.find_all('h3', class_='titular-encuesta')
-    for e in card__title_list11:
-        titulares.append(e.text) 
-    driver.quit()
-    print(f"total : {len(titulares)}")
-    sleep(10)
-    print("finalizando scraping")
-    sleep(10)
-    datos_obtenidos= len(titulares)
-    titulares = verificar_listado(titulares)
-    dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
-    return dic
+    try:    
+        limpiar_pantalla()
+        print("Iniciando scraping cooperativa")
+        driver = webdriver.Firefox(options=options)
+        url = "https://cooperativa.cl/"
+        driver.get(url)
+        sleep(30)
+        html_content = driver.page_source
+        soup = BeautifulSoup(html_content, 'html.parser')
+        titulares = list()
+        card__title_list1 = soup.find_all('h1', class_='titular-noticia')
+        for e in card__title_list1:
+            titulares.append(e.text)
+        card__title_list3 = soup.find_all('h3', class_='titular-noticia')
+        for e in card__title_list3:
+            titulares.append(e.text)
+        card__title_list4 = soup.find_all('div', class_='texto-titular')
+        for e in card__title_list4:
+            titulares.append(e.text)
+        card__title_list5 = soup.find_all('div', class_='titulo-ple')
+        for e in card__title_list5:
+            titulares.append(e.text)
+        card__title_list6 = soup.find_all('h3', class_='texto-titular')
+        for e in card__title_list6:
+            titulares.append(e.text)
+        container = soup.find('div', class_='container-cooperativaciencia')
+        card__title_list8 = container.find_all('div', class_='card')
+        for e in card__title_list8:
+            tit = e.find('span')
+            titulares.append(tit.text.strip())
+        card__title_list10 = soup.find_all('h3', class_='titular-texto')
+        for e in card__title_list10:
+            titulares.append(e.text)
+        card__title_list11 = soup.find_all('h3', class_='titular-encuesta')
+        for e in card__title_list11:
+            titulares.append(e.text) 
+        driver.quit()
+        print(f"total : {len(titulares)}")
+        sleep(10)
+        print("finalizando scraping")
+        sleep(10)
+        datos_obtenidos= len(titulares)
+        titulares = verificar_listado(titulares)
+        dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
+        return dic
+    except Exception as e:
+        print(f"no se pudo hacer scraping en cooperativa por {e}")
 
 def scraping_24hrs():
-    limpiar_pantalla()
-    print("Iniciando scraping 24hrs")
-    driver = webdriver.Firefox(options=options)
-    url = "https://www.24horas.cl/"
-    driver.get(url)
-    sleep(30)
-    html_content = driver.page_source
-    soup = BeautifulSoup(html_content, 'html.parser')
-    titulares = list()
-    card__title_list1 = soup.find_all('h1', class_='tit')
-    for e in card__title_list1:
-        titulares.append(e.text)
-    card__title_list2 = soup.find_all('h3', class_='tit')
-    for e in card__title_list2:
-        titulares.append(e.text)
-    driver.quit()
-    print(f"total : {len(titulares)}")
-    sleep(10)
-    print("finalizando scraping")
-    sleep(10)
-    datos_obtenidos= len(titulares)
-    titulares = verificar_listado(titulares)
-    dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
-    return dic
+    try:
+        limpiar_pantalla()
+        print("Iniciando scraping 24hrs")
+        driver = webdriver.Firefox(options=options)
+        url = "https://www.24horas.cl/"
+        driver.get(url)
+        sleep(30)
+        html_content = driver.page_source
+        soup = BeautifulSoup(html_content, 'html.parser')
+        titulares = list()
+        card__title_list1 = soup.find_all('h1', class_='tit')
+        for e in card__title_list1:
+            titulares.append(e.text)
+        card__title_list2 = soup.find_all('h3', class_='tit')
+        for e in card__title_list2:
+            titulares.append(e.text)
+        driver.quit()
+        print(f"total : {len(titulares)}")
+        sleep(10)
+        print("finalizando scraping")
+        sleep(10)
+        datos_obtenidos= len(titulares)
+        titulares = verificar_listado(titulares)
+        dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
+        return dic
+    except Exception as e:
+        print(f"no se pudo hacer scraping en 24hrs por {e}")
 
 def scraping_dinamo():
-    limpiar_pantalla()
-    print("Iniciando scraping el dinamo")
-    driver = webdriver.Firefox(options=options)
-    url = "https://www.eldinamo.cl/"
-    driver.get(url)
-    sleep(30)
-    html_content = driver.page_source
-    soup = BeautifulSoup(html_content, 'html.parser')
-    titulares = list()
-    card__title_list1 = soup.find_all('h2')
-    for e in card__title_list1:
-        titulares.append(e.text)
-    driver.quit()
-    print(f"total : {len(titulares)}")
-    sleep(10)
-    print("finalizando scraping")
-    sleep(10)
-    datos_obtenidos= len(titulares)
-    titulares = verificar_listado(titulares)
-    dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
-    return dic
+    try:
+        limpiar_pantalla()
+        print("Iniciando scraping el dinamo")
+        driver = webdriver.Firefox(options=options)
+        url = "https://www.eldinamo.cl/"
+        driver.get(url)
+        sleep(30)
+        html_content = driver.page_source
+        soup = BeautifulSoup(html_content, 'html.parser')
+        titulares = list()
+        card__title_list1 = soup.find_all('h2')
+        for e in card__title_list1:
+            titulares.append(e.text)
+        driver.quit()
+        print(f"total : {len(titulares)}")
+        sleep(10)
+        print("finalizando scraping")
+        sleep(10)
+        datos_obtenidos= len(titulares)
+        titulares = verificar_listado(titulares)
+        dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
+        return dic
+    except Exception as e:
+        print(f"no se pudo hacer scraping en dinamo por {e}")
 
 def scraping_cnnchile():
-    limpiar_pantalla()
-    print("Iniciando scraping cnn chile")
-    driver = webdriver.Firefox(options=options)
-    url = "https://www.cnnchile.com/"
-    driver.get(url)
-    sleep(30)
-    html_content = driver.page_source
-    soup = BeautifulSoup(html_content, 'html.parser')
-    titulares = list()
+    try:
+        limpiar_pantalla()
+        print("Iniciando scraping cnn chile")
+        driver = webdriver.Firefox(options=options)
+        url = "https://www.cnnchile.com/"
+        driver.get(url)
+        sleep(30)
+        html_content = driver.page_source
+        soup = BeautifulSoup(html_content, 'html.parser')
+        titulares = list()
 
-    card__title_list1 = soup.find_all('h2', class_='frost-highlight__title')
-    for e in card__title_list1:
-        titulares.append(e.text.strip())
+        card__title_list1 = soup.find_all('h2', class_='frost-highlight__title')
+        for e in card__title_list1:
+            titulares.append(e.text.strip())
 
-    card__title_list2 = soup.find_all('h3', class_='the-card__title')
-    for e in card__title_list2:
-        titulares.append(e.text.strip())
-    
-    card__title_list3 = soup.find_all('h2', class_='_coronavirus-box-list__title' )
-    for e in card__title_list3:
-        titulares.append(e.text.strip())
+        card__title_list2 = soup.find_all('h3', class_='the-card__title')
+        for e in card__title_list2:
+            titulares.append(e.text.strip())
+        
+        card__title_list3 = soup.find_all('h2', class_='_coronavirus-box-list__title' )
+        for e in card__title_list3:
+            titulares.append(e.text.strip())
 
-    card__title_list4 = soup.find_all('h3', class_='card__title')
-    for e in card__title_list4:
-        titulares.append(e.text.strip())
+        card__title_list4 = soup.find_all('h3', class_='card__title')
+        for e in card__title_list4:
+            titulares.append(e.text.strip())
 
-    card__title_list5 = soup.find_all('h2', class_='c-digitalizados-box-card__title')
-    for e in card__title_list5:
-        titulares.append(e.text.strip())
+        card__title_list5 = soup.find_all('h2', class_='c-digitalizados-box-card__title')
+        for e in card__title_list5:
+            titulares.append(e.text.strip())
 
-    card__title_list6 = soup.find_all('h2', class_='after-card__title')
-    for e in card__title_list6:
-        titulares.append(e.text.strip())
+        card__title_list6 = soup.find_all('h2', class_='after-card__title')
+        for e in card__title_list6:
+            titulares.append(e.text.strip())
 
-    card__title_list7 = soup.find_all('div', class_ ='main-list__item')
-    for e in card__title_list7:
-        titulares.append(e.text.strip())
+        card__title_list7 = soup.find_all('div', class_ ='main-list__item')
+        for e in card__title_list7:
+            titulares.append(e.text.strip())
 
-    driver.quit()
-    print(f"total : {len(titulares)}")
-    sleep(10)
-    print("finalizando scraping")
-    sleep(10)
-    datos_obtenidos= len(titulares)
-    titulares = verificar_listado(titulares)
-    dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
-    return dic
+        driver.quit()
+        print(f"total : {len(titulares)}")
+        sleep(10)
+        print("finalizando scraping")
+        sleep(10)
+        datos_obtenidos= len(titulares)
+        titulares = verificar_listado(titulares)
+        dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
+        return dic
+    except Exception as e:
+        print(f"no se pudo hacer scraping en cnn chile por {e}")
 
 def scraping_elpais():
-    limpiar_pantalla()
-    print("Iniciando scraping el pais")
-    driver = webdriver.Firefox(options=options)
-    url = "https://elpais.com/noticias/chile/"
-    driver.get(url)
-    sleep(30)
-    html_content = driver.page_source
-    soup = BeautifulSoup(html_content, 'html.parser')
-    titulares = list()
+    try:
+        limpiar_pantalla()
+        print("Iniciando scraping el pais")
+        driver = webdriver.Firefox(options=options)
+        url = "https://elpais.com/noticias/chile/"
+        driver.get(url)
+        sleep(30)
+        html_content = driver.page_source
+        soup = BeautifulSoup(html_content, 'html.parser')
+        titulares = list()
 
-    card__title_list1 = soup.find_all('h2', class_='c_t')
-    for e in card__title_list1:
-        titulares.append(e.text.strip())
+        card__title_list1 = soup.find_all('h2', class_='c_t')
+        for e in card__title_list1:
+            titulares.append(e.text.strip())
 
-    driver.quit()
-    print(f"total : {len(titulares)}")
-    sleep(10)
-    print("finalizando scraping")
-    sleep(10)
-    datos_obtenidos= len(titulares)
-    titulares = verificar_listado(titulares)
-    dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
-    return dic
+        driver.quit()
+        print(f"total : {len(titulares)}")
+        sleep(10)
+        print("finalizando scraping")
+        sleep(10)
+        datos_obtenidos= len(titulares)
+        titulares = verificar_listado(titulares)
+        dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
+        return dic
+    except Exception as e:
+        print(f"no se pudo hacer scraping en elpais por {e}")
 
 def scraping_biobio():
-    limpiar_pantalla()
-    print("Iniciando scraping biobio")
-    driver = webdriver.Firefox(options=options)
-    url = "https://www.biobiochile.cl/"
-    driver.get(url)
-    sleep(30)
-    html_content = driver.page_source
-    soup = BeautifulSoup(html_content, 'html.parser')
-    titulares = list()
+    try:
+        limpiar_pantalla()
+        print("Iniciando scraping biobio")
+        driver = webdriver.Firefox(options=options)
+        url = "https://www.biobiochile.cl/"
+        driver.get(url)
+        sleep(30)
+        html_content = driver.page_source
+        soup = BeautifulSoup(html_content, 'html.parser')
+        titulares = list()
 
-    card__title_list1 = soup.find_all('h2', class_='article-title')
-    for e in card__title_list1:
-        titulares.append(e.text.strip())
-    
-    card__title_list2 = soup.find_all('h3', class_='titular')
-    for e in card__title_list2:
-        titulares.append(e.text.strip())
+        card__title_list1 = soup.find_all('h2', class_='article-title')
+        for e in card__title_list1:
+            titulares.append(e.text.strip())
+        
+        card__title_list2 = soup.find_all('h3', class_='titular')
+        for e in card__title_list2:
+            titulares.append(e.text.strip())
 
-    card__title_list3 = soup.find_all('h3', class_='article-title')
-    for e in card__title_list3:
-        titulares.append(e.text.strip())
+        card__title_list3 = soup.find_all('h3', class_='article-title')
+        for e in card__title_list3:
+            titulares.append(e.text.strip())
 
-    driver.quit()
-    print(f"total : {len(titulares)}")
-    sleep(10)
-    print("finalizando scraping")
-    sleep(10)
-    datos_obtenidos= len(titulares)
-    titulares = verificar_listado(titulares)
-    dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
-    return dic
+        driver.quit()
+        print(f"total : {len(titulares)}")
+        sleep(10)
+        print("finalizando scraping")
+        sleep(10)
+        datos_obtenidos= len(titulares)
+        titulares = verificar_listado(titulares)
+        dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
+        return dic
+    except Exception as e:
+        print(f"no se pudo hacer scraping en biobio por {e}")
 
 def scraping_chilevisionNoticias():
-    limpiar_pantalla()
-    print("Iniciando scraping chilevision noticias")
-    driver = webdriver.Firefox(options=options)
-    url = "https://www.chvnoticias.cl/"
-    driver.get(url)
-    sleep(30)
-    html_content = driver.page_source
-    soup = BeautifulSoup(html_content, 'html.parser')
-    titulares = list()
+    try:
+        limpiar_pantalla()
+        print("Iniciando scraping chilevision noticias")
+        driver = webdriver.Firefox(options=options)
+        url = "https://www.chvnoticias.cl/"
+        driver.get(url)
+        sleep(30)
+        html_content = driver.page_source
+        soup = BeautifulSoup(html_content, 'html.parser')
+        titulares = list()
 
-    card__title_list1 = soup.find_all('h2', class_='the-card__title')
-    for e in card__title_list1:
-        titulares.append(e.text.strip())
+        card__title_list1 = soup.find_all('h2', class_='the-card__title')
+        for e in card__title_list1:
+            titulares.append(e.text.strip())
 
-    card__title_list2 = soup.find_all('h2', class_='headlines-list__title')
-    for e in card__title_list2:
-        titulares.append(e.text.strip())
-    
-    card__title_list3 = soup.find_all('img', class_='overlay-card__image')
-    for e in card__title_list3:
-        titulares.append(e.text.strip())
+        card__title_list2 = soup.find_all('h2', class_='headlines-list__title')
+        for e in card__title_list2:
+            titulares.append(e.text.strip())
+        
+        card__title_list3 = soup.find_all('img', class_='overlay-card__image')
+        for e in card__title_list3:
+            titulares.append(e.text.strip())
 
-    card__title_list4 = soup.find_all('h2', class_='the-text-card__title')
-    for e in card__title_list4:
-        titulares.append(e.text.strip())
-    
-    card__title_list5 = soup.find_all('h2', class_='alt-card__title')
-    for e in card__title_list5:
-        titulares.append(e.text.strip())
+        card__title_list4 = soup.find_all('h2', class_='the-text-card__title')
+        for e in card__title_list4:
+            titulares.append(e.text.strip())
+        
+        card__title_list5 = soup.find_all('h2', class_='alt-card__title')
+        for e in card__title_list5:
+            titulares.append(e.text.strip())
 
-    card__title_list6 = soup.find_all('h2', class_='media-card__title')
-    for e in card__title_list6:
-        titulares.append(e.text.strip())
+        card__title_list6 = soup.find_all('h2', class_='media-card__title')
+        for e in card__title_list6:
+            titulares.append(e.text.strip())
 
-    titulares = verificar_listado(titulares)
-    driver.quit()
-    print(f"total : {len(titulares)}")
-    sleep(10)
-    print("finalizando scraping")
-    sleep(10)
-    datos_obtenidos= len(titulares)
-    titulares = verificar_listado(titulares)
-    dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
-    return dic
+        titulares = verificar_listado(titulares)
+        driver.quit()
+        print(f"total : {len(titulares)}")
+        sleep(10)
+        print("finalizando scraping")
+        sleep(10)
+        datos_obtenidos= len(titulares)
+        titulares = verificar_listado(titulares)
+        dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
+        return dic
+    except Exception as e:
+        print(f"no se pudo hacer scraping en chilevision por {e}")
 
 def scraping_ciper():
-    limpiar_pantalla()
-    print("Iniciando scraping ciperchile")
-    driver = webdriver.Firefox(options=options)
-    url = "https://www.ciperchile.cl/"
-    driver.get(url)
-    sleep(30)
-    html_content = driver.page_source
-    soup = BeautifulSoup(html_content, 'html.parser')
-    titulares = list()
-    card__title_list1 = soup.find_all('a', class_='alticle-link')
-    print(f" elementos a revisar: {len (card__title_list1)}")
-    sleep(3)
-    for e in card__title_list1:
-        titulares.append(e.text.strip())
-    titulares = verificar_listado(titulares)
-    driver.quit()
-    print(f"total : {len(titulares)}")
-    sleep(10)
-    print("finalizando scraping")
-    sleep(10)
-    datos_obtenidos= len(titulares)
-    titulares = verificar_listado(titulares)
-    dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
-    return dic
-
+    try:
+        limpiar_pantalla()
+        print("Iniciando scraping ciperchile")
+        driver = webdriver.Firefox(options=options)
+        url = "https://www.ciperchile.cl/"
+        driver.get(url)
+        sleep(30)
+        html_content = driver.page_source
+        soup = BeautifulSoup(html_content, 'html.parser')
+        titulares = list()
+        card__title_list1 = soup.find_all('a', class_='alticle-link')
+        print(f" elementos a revisar: {len (card__title_list1)}")
+        sleep(3)
+        for e in card__title_list1:
+            titulares.append(e.text.strip())
+        titulares = verificar_listado(titulares)
+        driver.quit()
+        print(f"total : {len(titulares)}")
+        sleep(10)
+        print("finalizando scraping")
+        sleep(10)
+        datos_obtenidos= len(titulares)
+        titulares = verificar_listado(titulares)
+        dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
+        return dic
+    except Exception as e:
+        print(f"no se pudo hacer scraping en ciper por {e}")
+    
 def scraping_soychile():
-    limpiar_pantalla()
-    print("Iniciando scraping soy chile")
-    driver = webdriver.Firefox(options=options)
-    url = "https://www.soychile.cl/"
-    driver.get(url)
-    sleep(30)
-    html_content = driver.page_source
-    soup = BeautifulSoup(html_content, 'html.parser')
-    titulares = list()
+    try:
+        limpiar_pantalla()
+        print("Iniciando scraping soy chile")
+        driver = webdriver.Firefox(options=options)
+        url = "https://www.soychile.cl/"
+        driver.get(url)
+        sleep(30)
+        html_content = driver.page_source
+        soup = BeautifulSoup(html_content, 'html.parser')
+        titulares = list()
 
-    card__title_list1 = soup.find_all('h1', class_='media-heading--principal')
-    for e in card__title_list1:
-        titulares.append(e.text.strip())
+        card__title_list1 = soup.find_all('h1', class_='media-heading--principal')
+        for e in card__title_list1:
+            titulares.append(e.text.strip())
 
-    card__title_list2 = soup.find_all('h2', class_='media-heading')
-    for e in card__title_list2:
-        titulares.append(e.text.strip())
-    
-    card__title_list3 = soup.find_all('div', class_='stv-widget__footer')
-    for e in card__title_list3:
-        titulares.append(e.text.strip())
-    
-    card__title_list4 = soup.find_all('h3', class_='note-sidebar-title')
-    for e in card__title_list4:
-        titulares.append(e.text.strip())
-    
-#    card__title_list5 = soup.select('.carousel span:not([class])')
-#    for e in card__title_list5:
-#        titulares.append(e.text.strip())
-    driver.quit()
-    print(f"total : {len(titulares)}")
-    sleep(10)
-    print("finalizando scraping")
-    sleep(10)
-    datos_obtenidos= len(titulares)
-    titulares = verificar_listado(titulares)
-    dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
-    return dic
+        card__title_list2 = soup.find_all('h2', class_='media-heading')
+        for e in card__title_list2:
+            titulares.append(e.text.strip())
+        
+        card__title_list3 = soup.find_all('div', class_='stv-widget__footer')
+        for e in card__title_list3:
+            titulares.append(e.text.strip())
+        
+        card__title_list4 = soup.find_all('h3', class_='note-sidebar-title')
+        for e in card__title_list4:
+            titulares.append(e.text.strip())
+        
+    #    card__title_list5 = soup.select('.carousel span:not([class])')
+    #    for e in card__title_list5:
+    #        titulares.append(e.text.strip())
+        driver.quit()
+        print(f"total : {len(titulares)}")
+        sleep(10)
+        print("finalizando scraping")
+        sleep(10)
+        datos_obtenidos= len(titulares)
+        titulares = verificar_listado(titulares)
+        dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
+        return dic
+    except Exception as e:
+        print(f"no se pudo hacer scraping en soychile por {e}")
 
 def scraping_elmostrador():
-    limpiar_pantalla()
-    print("Iniciando scraping elmostrador")
-    driver = webdriver.Firefox(options=options)
-    url = "https://www.elmostrador.cl/"
-    driver.get(url)
-    sleep(30)
-    html_content = driver.page_source
-    soup = BeautifulSoup(html_content, 'html.parser')
-    titulares = list()
+    try:
+        limpiar_pantalla()
+        print("Iniciando scraping elmostrador")
+        driver = webdriver.Firefox(options=options)
+        url = "https://www.elmostrador.cl/"
+        driver.get(url)
+        sleep(30)
+        html_content = driver.page_source
+        soup = BeautifulSoup(html_content, 'html.parser')
+        titulares = list()
 
-    card__title_list1 = soup.find_all('h2', class_='d-main-card__title')
-    for e in card__title_list1:
-        titulares.append(e.text.strip())
+        card__title_list1 = soup.find_all('h2', class_='d-main-card__title')
+        for e in card__title_list1:
+            titulares.append(e.text.strip())
 
-    card__title_list2 = soup.find_all('h2', class_='d-text-card__title')
-    for e in card__title_list2:
-        titulares.append(e.text.strip())
+        card__title_list2 = soup.find_all('h2', class_='d-text-card__title')
+        for e in card__title_list2:
+            titulares.append(e.text.strip())
+        
+        card__title_list3 = soup.find_all('strong', class_='d-opinion-box-card__title')
+        for e in card__title_list3:
+            titulares.append(e.text.strip())
+        
+        card__title_list4 = soup.find_all('h1', class_='d-main-card__title')
+        for e in card__title_list4:
+            titulares.append(e.text.strip())
+
+        card__title_list5 = soup.find_all('h3', class_='numbered-box__title')
+        for e in card__title_list5:
+            titulares.append(e.text.strip())
     
-    card__title_list3 = soup.find_all('strong', class_='d-opinion-box-card__title')
-    for e in card__title_list3:
-        titulares.append(e.text.strip())
-    
-    card__title_list4 = soup.find_all('h1', class_='d-main-card__title')
-    for e in card__title_list4:
-        titulares.append(e.text.strip())
-
-    card__title_list5 = soup.find_all('h3', class_='numbered-box__title')
-    for e in card__title_list5:
-        titulares.append(e.text.strip())
- 
-    driver.quit()
-    print(f"total : {len(titulares)}")
-    sleep(10)
-    print("finalizando scraping")
-    sleep(10)
-    datos_obtenidos= len(titulares)
-    titulares = verificar_listado(titulares)
-    dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
-    return dic
+        driver.quit()
+        print(f"total : {len(titulares)}")
+        sleep(10)
+        print("finalizando scraping")
+        sleep(10)
+        datos_obtenidos= len(titulares)
+        titulares = verificar_listado(titulares)
+        dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
+        return dic
+    except Exception as e:
+        print(f"no se pudo hacer scraping en elmostrador por {e}")
 
 def scraping_latercera():
-    limpiar_pantalla()
-    print("Iniciando scraping la tercera")
-    driver = webdriver.Firefox(options=options)
-    url = "https://www.latercera.com/"
-    driver.get(url)
-    sleep(30)
-    html_content = driver.page_source
-    soup = BeautifulSoup(html_content, 'html.parser')
-    titulares = list()
+    try:
+        limpiar_pantalla()
+        print("Iniciando scraping la tercera")
+        driver = webdriver.Firefox(options=options)
+        url = "https://www.latercera.com/"
+        driver.get(url)
+        sleep(30)
+        html_content = driver.page_source
+        soup = BeautifulSoup(html_content, 'html.parser')
+        titulares = list()
 
-    card__title_list1 = soup.find_all('div', class_='headline')
-    for e in card__title_list1:
-        titulares.append(e.text.strip())
+        card__title_list1 = soup.find_all('div', class_='headline')
+        for e in card__title_list1:
+            titulares.append(e.text.strip())
 
-    driver.quit()
-    print(f"total : {len(titulares)}")
-    sleep(10)
-    print("finalizando scraping")
-    sleep(10)
-    datos_obtenidos= len(titulares)
-    titulares = verificar_listado(titulares)
-    dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
-    return dic
+        driver.quit()
+        print(f"total : {len(titulares)}")
+        sleep(10)
+        print("finalizando scraping")
+        sleep(10)
+        datos_obtenidos= len(titulares)
+        titulares = verificar_listado(titulares)
+        dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
+        return dic
+    except Exception as e:
+        print(f"no se pudo hacer scraping en latercera por {e}")
 
 def scraping_lacuarta():
-    limpiar_pantalla()
-    print("Iniciando scraping la cuarta")
-    driver = webdriver.Firefox(options=options)
-    url = "https://www.lacuarta.com/"
-    driver.get(url)
-    sleep(30)
-    html_content = driver.page_source
-    soup = BeautifulSoup(html_content, 'html.parser')
-    titulares = list()
+    try:
+        limpiar_pantalla()
+        print("Iniciando scraping la cuarta")
+        driver = webdriver.Firefox(options=options)
+        url = "https://www.lacuarta.com/"
+        driver.get(url)
+        sleep(30)
+        html_content = driver.page_source
+        soup = BeautifulSoup(html_content, 'html.parser')
+        titulares = list()
 
-    card__title_list1 = soup.find_all('h1', class_='article-title')
-    for e in card__title_list1:
-        titulares.append(e.text.strip())
+        card__title_list1 = soup.find_all('h1', class_='article-title')
+        for e in card__title_list1:
+            titulares.append(e.text.strip())
 
-    card__title_list1 = soup.find_all('h2', class_='article-title')
-    for e in card__title_list1:
-        titulares.append(e.text.strip())
-    
-    card__title_list1 = soup.find_all('div', class_='headline')
-    for e in card__title_list1:
-        titulares.append(e.text.strip())
+        card__title_list1 = soup.find_all('h2', class_='article-title')
+        for e in card__title_list1:
+            titulares.append(e.text.strip())
+        
+        card__title_list1 = soup.find_all('div', class_='headline')
+        for e in card__title_list1:
+            titulares.append(e.text.strip())
 
-    driver.quit()
-    print(f"total : {len(titulares)}")
-    sleep(10)
-    print("finalizando scraping")
-    sleep(10)
-    datos_obtenidos= len(titulares)
-    titulares = verificar_listado(titulares)
-    dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
-    return dic
+        driver.quit()
+        print(f"total : {len(titulares)}")
+        sleep(10)
+        print("finalizando scraping")
+        sleep(10)
+        datos_obtenidos= len(titulares)
+        titulares = verificar_listado(titulares)
+        dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
+        return dic
+    except Exception as e:
+        print(f"no se pudo hacer scraping en lacuarta por {e}")
 
 def scraping_emol():
-    limpiar_pantalla()
-    print("Iniciando scraping el mercurio online")
-    driver = webdriver.Firefox(options=options)
-    url = "https://www.emol.com/"
-    driver.get(url)
-    sleep(30)
-    for i in range(5):  # Ajusta la cantidad de veces que deseas hacer scroll
-        print(f" scroll {i}")
-        driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.END)
-        sleep(10)   
-    html_content = driver.page_source
-    soup = BeautifulSoup(html_content, 'html.parser')
-    titulares = list()
+    try:
+        limpiar_pantalla()
+        print("Iniciando scraping el mercurio online")
+        driver = webdriver.Firefox(options=options)
+        url = "https://www.emol.com/"
+        driver.get(url)
+        sleep(30)
+        for i in range(5):  # Ajusta la cantidad de veces que deseas hacer scroll
+            print(f" scroll {i}")
+            driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.END)
+            sleep(10)   
+        html_content = driver.page_source
+        soup = BeautifulSoup(html_content, 'html.parser')
+        titulares = list()
 
-    list1 = soup.select('h1 a')
-    for e in list1:
-        titulares.append(e.text.strip())
+        list1 = soup.select('h1 a')
+        for e in list1:
+            titulares.append(e.text.strip())
 
-    list2 = soup.select('h2 a')
-    for e in list2:
-        titulares.append(e.text.strip())
+        list2 = soup.select('h2 a')
+        for e in list2:
+            titulares.append(e.text.strip())
 
-    list3 =  soup.select('h3 a')
-    for e in list3:
-        titulares.append(e.text.strip())
-    
-    list4 = soup.select('h4 a')
-    for e in list4:
-        titulares.append(e.text.strip())
+        list3 =  soup.select('h3 a')
+        for e in list3:
+            titulares.append(e.text.strip())
+        
+        list4 = soup.select('h4 a')
+        for e in list4:
+            titulares.append(e.text.strip())
 
-    list5 = soup.select('h5 a')
-    for e in list5:
-        titulares.append(e.text.strip())
+        list5 = soup.select('h5 a')
+        for e in list5:
+            titulares.append(e.text.strip())
 
-    list6 = soup.find_all('div', class_='divico_txt')
-    for e in list6:
-        titulares.append(e.text.strip())
+        list6 = soup.find_all('div', class_='divico_txt')
+        for e in list6:
+            titulares.append(e.text.strip())
 
-    list7 = soup.select('.contenedor-titulo a')
-    for e in list7:
-        titulares.append(e.text.strip())
-    
-    list8 = soup.select('.noticias_caja_texto a')
-    for e in list8:
-        titulares.append(e.text.strip())
+        list7 = soup.select('.contenedor-titulo a')
+        for e in list7:
+            titulares.append(e.text.strip())
+        
+        list8 = soup.select('.noticias_caja_texto a')
+        for e in list8:
+            titulares.append(e.text.strip())
 
-    list9 = soup.find_all('div', class_='caja_contenedor_masvistos_modulo_texto')
-    for e in list9:
-        titulares.append(e.text.strip())
+        list9 = soup.find_all('div', class_='caja_contenedor_masvistos_modulo_texto')
+        for e in list9:
+            titulares.append(e.text.strip())
 
-    list10 = soup.select('.titulo_mag1 a')
-    for e in list10:
-        titulares.append(e.text.strip())
+        list10 = soup.select('.titulo_mag1 a')
+        for e in list10:
+            titulares.append(e.text.strip())
 
-    list11 = soup.select('.titulo1 a')
-    for e in list11:
-        titulares.append(e.text.strip())
+        list11 = soup.select('.titulo1 a')
+        for e in list11:
+            titulares.append(e.text.strip())
 
-    list12 = soup.select('.titulo2 a')
-    for e in list12:
-        titulares.append(e.text.strip())
+        list12 = soup.select('.titulo2 a')
+        for e in list12:
+            titulares.append(e.text.strip())
 
-    list13 = soup.select('.titulo_dep1 a')
-    for e in list13:
-        titulares.append(e.text.strip())
+        list13 = soup.select('.titulo_dep1 a')
+        for e in list13:
+            titulares.append(e.text.strip())
 
-    list13 = soup.select('.titulo_dep2 a')
-    for e in list13:
-        titulares.append(e.text.strip())
+        list13 = soup.select('.titulo_dep2 a')
+        for e in list13:
+            titulares.append(e.text.strip())
 
-    list13 = soup.select('.titulo_dep3 a')
-    for e in list13:
-        titulares.append(e.text.strip())
+        list13 = soup.select('.titulo_dep3 a')
+        for e in list13:
+            titulares.append(e.text.strip())
 
-    list13 = soup.select('.titulo_tend1 a')
-    for e in list13:
-        titulares.append(e.text.strip())
-    
-    list13 = soup.select('.titulo_tend2 a')
-    for e in list13:
-        titulares.append(e.text.strip())
+        list13 = soup.select('.titulo_tend1 a')
+        for e in list13:
+            titulares.append(e.text.strip())
+        
+        list13 = soup.select('.titulo_tend2 a')
+        for e in list13:
+            titulares.append(e.text.strip())
 
-    list13 = soup.select('.titulo_tend3 a')
-    for e in list13:
-        titulares.append(e.text.strip())
+        list13 = soup.select('.titulo_tend3 a')
+        for e in list13:
+            titulares.append(e.text.strip())
 
-    list13 = soup.select('.caja_multi_model_txt a')
-    for e in list13:
-        titulares.append(e.text.strip())
+        list13 = soup.select('.caja_multi_model_txt a')
+        for e in list13:
+            titulares.append(e.text.strip())
 
-    driver.quit()
-    print(f"total : {len(titulares)}")
-    sleep(10)
-    print("finalizando scraping")
-    sleep(10)
-    datos_obtenidos= len(titulares)
-    titulares = verificar_listado(titulares)
-    dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
-    return dic
+        driver.quit()
+        print(f"total : {len(titulares)}")
+        sleep(10)
+        print("finalizando scraping")
+        sleep(10)
+        datos_obtenidos= len(titulares)
+        titulares = verificar_listado(titulares)
+        dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
+        return dic
+    except Exception as e:
+        print(f"no se pudo hacer scraping en emol por {e}")
 
 def scraping_lasegunda():
-    limpiar_pantalla()
-    print("Iniciando scraping la segunda")
-    driver = webdriver.Firefox(options=options)
-    url = "https://impresa.lasegunda.com/"
-    driver.get(url)
-    sleep(30)
-    html_content = driver.page_source
-    soup = BeautifulSoup(html_content, 'html.parser')
-    titulares = list()
+    try:
+        limpiar_pantalla()
+        print("Iniciando scraping la segunda")
+        driver = webdriver.Firefox(options=options)
+        url = "https://impresa.lasegunda.com/"
+        driver.get(url)
+        sleep(30)
+        html_content = driver.page_source
+        soup = BeautifulSoup(html_content, 'html.parser')
+        titulares = list()
 
-    list1 = soup.select('.contenedor_der_nota_rank')
-    for e in list1:
-        h2_element = e.find('h2')
-        h3_element = e.find('h3')
-        tit = h2_element.text.strip()+ " "+h3_element.text.strip()
-        titulares.append(tit)
+        list1 = soup.select('.contenedor_der_nota_rank')
+        for e in list1:
+            h2_element = e.find('h2')
+            h3_element = e.find('h3')
+            tit = h2_element.text.strip()+ " "+h3_element.text.strip()
+            titulares.append(tit)
 
-    driver.quit()
-    print(f"total : {len(titulares)}")
-    sleep(10)
-    print("finalizando scraping")
-    sleep(10)
-    datos_obtenidos= len(titulares)
-    titulares = verificar_listado(titulares)
-    dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
-    return dic
-    
+        driver.quit()
+        print(f"total : {len(titulares)}")
+        sleep(10)
+        print("finalizando scraping")
+        sleep(10)
+        datos_obtenidos= len(titulares)
+        titulares = verificar_listado(titulares)
+        dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
+        return dic
+    except Exception as e:
+        print(f"no se pudo hacer scraping en lasegunda por {e}")
 #pendiente
 def scraping_lun():
     limpiar_pantalla()
@@ -706,79 +750,83 @@ def scraping_lun():
     return dic
    
 def scraping_df():
-    limpiar_pantalla()
-    print("Iniciando scraping diario financiero")
-    driver = webdriver.Firefox(options=options)
-    url = "https://www.df.cl/"
-    driver.get(url)
-    sleep(30)
-    html_content = driver.page_source
-    soup = BeautifulSoup(html_content, 'html.parser')
-    titulares = list()
+    try:
+        limpiar_pantalla()
+        print("Iniciando scraping diario financiero")
+        driver = webdriver.Firefox(options=options)
+        url = "https://www.df.cl/"
+        driver.get(url)
+        sleep(60)
+        html_content = driver.page_source
+        soup = BeautifulSoup(html_content, 'html.parser')
+        titulares = list()
 
-    list1 = soup.select('h2 a')
-    for e in list1:
-        titulares.append( e.text.strip())
-    list1 = soup.select('.titular')
-    for e in list1:
-        titulares.append( e.text.strip())
-    list1 = soup.select('h3 a')
-    for e in list1:
-        titulares.append( e.text.strip())
-    list1 = soup.select('h6')
-    for e in list1:
-        titulares.append( e.text.strip())
-    list1 = soup.select('.imagecover-titulo a')
-    for e in list1:
-        titulares.append( e.text.strip())
-    list1 = soup.select('.titulo-reportaje a')
-    for e in list1:
-        titulares.append( e.text.strip())    
-        
-    list1 = soup.select('.titular strong a')
-    for e in list1:
-        titulares.append( e.text.strip())  
+        list1 = soup.select('h2 a')
+        for e in list1:
+            titulares.append( e.text.strip())
+        list1 = soup.select('.titular')
+        for e in list1:
+            titulares.append( e.text.strip())
+        list1 = soup.select('h3 a')
+        for e in list1:
+            titulares.append( e.text.strip())
+        list1 = soup.select('h6')
+        for e in list1:
+            titulares.append( e.text.strip())
+        list1 = soup.select('.imagecover-titulo a')
+        for e in list1:
+            titulares.append( e.text.strip())
+        list1 = soup.select('.titulo-reportaje a')
+        for e in list1:
+            titulares.append( e.text.strip())    
+            
+        list1 = soup.select('.titular strong a')
+        for e in list1:
+            titulares.append( e.text.strip())  
 
-    list1 = soup.select('.txt-caja-video')
-    for e in list1:
-        titulares.append( e.text.strip()) 
+        list1 = soup.select('.txt-caja-video')
+        for e in list1:
+            titulares.append( e.text.strip()) 
 
-    driver.quit()
-    print(f"total : {len(titulares)}")
-    sleep(10)
-    print("finalizando scraping")
-    sleep(10)
-    datos_obtenidos= len(titulares)
-    titulares = verificar_listado(titulares)
-    dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
-    return dic
-   
+        driver.quit()
+        print(f"total : {len(titulares)}")
+        sleep(10)
+        print("finalizando scraping")
+        sleep(10)
+        datos_obtenidos= len(titulares)
+        titulares = verificar_listado(titulares)
+        dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
+        return dic
+    except Exception as e:
+        print(f"no se pudo hacer scraping en diariofinanciero por {e}")
+
 def scraping_meganoticias():
-    #div titular h2 
-    #h2
-    limpiar_pantalla()
-    print("Iniciando scraping meganoticias")
-    driver = webdriver.Firefox(options=options)
-    url = "https://www.meganoticias.cl/"
-    driver.get(url)
-    sleep(30)
-    html_content = driver.page_source
-    soup = BeautifulSoup(html_content, 'html.parser')
-    titulares = list()
+    try:
+        limpiar_pantalla()
+        print("Iniciando scraping meganoticias")
+        driver = webdriver.Firefox(options=options)
+        url = "https://www.meganoticias.cl/"
+        driver.get(url)
+        sleep(30)
+        html_content = driver.page_source
+        soup = BeautifulSoup(html_content, 'html.parser')
+        titulares = list()
 
-    list1 = soup.select('.titular')
-    for e in list1:
-        titulares.append( e.text.strip())
+        list1 = soup.select('.titular')
+        for e in list1:
+            titulares.append( e.text.strip())
 
-    driver.quit()
-    print(f"total : {len(titulares)}")
-    sleep(10)
-    print("finalizando scraping")
-    sleep(10)
-    datos_obtenidos= len(titulares)
-    titulares = verificar_listado(titulares)
-    dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
-    return dic
+        driver.quit()
+        print(f"total : {len(titulares)}")
+        sleep(10)
+        print("finalizando scraping")
+        sleep(10)
+        datos_obtenidos= len(titulares)
+        titulares = verificar_listado(titulares)
+        dic = {'link':url, 'data_scraping': datos_obtenidos, 'titulares':titulares}
+        return dic
+    except Exception as e:
+        print(f"no se pudo hacer scraping en meganoticias por {e}")
       
 def main():
     #aqui voy a correr cada uno de los scripts por pagina
@@ -1107,6 +1155,10 @@ def ciclo_scraping2():
                 
     tiempo_fin = time.time()
     tiempo_total = tiempo_fin - tiempo_inicio
+    #consultar
+    
+
+
     realizar_analisis_general(fecha)
     print(f"tiempo transcurrido: {tiempo_total}")
 
@@ -1186,38 +1238,61 @@ def realizar_analisis_general(fecha):
     print("realizando analisis general")
     conn = conectar_bd()
     cursor = conn.cursor()
-    #obtener todos los medio_diario con esa fecha 
+
+    #ver si existe
+    cursor.execute(f"Select id from analisis_general where fecha={fecha};")
+    resultados = cursor.fetchall()
+    id_analisis = resultados[0][0]
     subconsulta_medio_diario =(f"SELECT id FROM medio_diario WHERE fecha= '{fecha}'")
-    #lista_medio_diario = cursor.fetchall()
+    # Verificar si hay resultados
+    if resultados:  
+        print("analisis ya existe para esa fecha")
+        cursor.execute(f"delete from analisis_general where id={id_analisis};")
+        print("se elimino registro existente")
 
-    #el total de noticias para ese dia
-    cursor.execute(f"SELECT COUNT(id) FROM  noticia where medio_diario in ({subconsulta_medio_diario});")
-    datos = cursor.fetchall()
-    total_general = datos[0][0]
-    #el total de noticias con contexto positivo
-    cursor.execute(f"SELECT COUNT(id) FROM  noticia where medio_diario in ({subconsulta_medio_diario}) and contexto = (select id from contexto where tipo ilike 'positivo')  ;")
-    datos = cursor.fetchall()
-    total_positivo = datos[0][0]
-    #el total de noticias con contexto negativo
-    cursor.execute(f"SELECT COUNT(id) FROM  noticia where medio_diario in ({subconsulta_medio_diario}) and contexto = (select id from contexto where tipo ilike 'negativo')  ;")
-    datos = cursor.fetchall()
-    total_negativo = datos[0][0]
-    #el total de noticias con contexto neutro
-    cursor.execute(f"SELECT COUNT(id) FROM  noticia where medio_diario in ({subconsulta_medio_diario}) and contexto = (select id from contexto where tipo ilike 'neutro')  ;")
-    datos = cursor.fetchall()
-    total_neutro = datos[0][0]
-    #insertar en analisis general
-    cursor.execute(f"INSERT INTO analisis_general(fecha,buenas,malas,neutra,total) VALUES('{fecha}',{total_positivo},{total_negativo},{total_neutro},{total_general} );")
-    conn.commit()
-    print(" analisis general completado")
+        #el total de noticias para ese dia
+        cursor.execute(f"SELECT COUNT(id) FROM  noticia where medio_diario in ({subconsulta_medio_diario});")
+        datos = cursor.fetchall()
+        total_general = datos[0][0]
+        #el total de noticias con contexto positivo
+        cursor.execute(f"SELECT COUNT(id) FROM  noticia where medio_diario in ({subconsulta_medio_diario}) and contexto = (select id from contexto where tipo ilike 'positivo')  ;")
+        datos = cursor.fetchall()
+        total_positivo = datos[0][0]
+        #el total de noticias con contexto negativo
+        cursor.execute(f"SELECT COUNT(id) FROM  noticia where medio_diario in ({subconsulta_medio_diario}) and contexto = (select id from contexto where tipo ilike 'negativo')  ;")
+        datos = cursor.fetchall()
+        total_negativo = datos[0][0]
+        #el total de noticias con contexto neutro
+        cursor.execute(f"SELECT COUNT(id) FROM  noticia where medio_diario in ({subconsulta_medio_diario}) and contexto = (select id from contexto where tipo ilike 'neutro')  ;")
+        datos = cursor.fetchall()
+        total_neutro = datos[0][0]
+        #insertar en analisis general
+        cursor.execute(f"INSERT INTO analisis_general(fecha,buenas,malas,neutra,total) VALUES('{fecha}',{total_positivo},{total_negativo},{total_neutro},{total_general} );")
+        conn.commit()
+        print(" analisis general completado")
 
-#main()
+    else:
+        #el total de noticias para ese dia
+        cursor.execute(f"SELECT COUNT(id) FROM  noticia where medio_diario in ({subconsulta_medio_diario});")
+        datos = cursor.fetchall()
+        total_general = datos[0][0]
+        #el total de noticias con contexto positivo
+        cursor.execute(f"SELECT COUNT(id) FROM  noticia where medio_diario in ({subconsulta_medio_diario}) and contexto = (select id from contexto where tipo ilike 'positivo')  ;")
+        datos = cursor.fetchall()
+        total_positivo = datos[0][0]
+        #el total de noticias con contexto negativo
+        cursor.execute(f"SELECT COUNT(id) FROM  noticia where medio_diario in ({subconsulta_medio_diario}) and contexto = (select id from contexto where tipo ilike 'negativo')  ;")
+        datos = cursor.fetchall()
+        total_negativo = datos[0][0]
+        #el total de noticias con contexto neutro
+        cursor.execute(f"SELECT COUNT(id) FROM  noticia where medio_diario in ({subconsulta_medio_diario}) and contexto = (select id from contexto where tipo ilike 'neutro')  ;")
+        datos = cursor.fetchall()
+        total_neutro = datos[0][0]
+        #insertar en analisis general
+        cursor.execute(f"INSERT INTO analisis_general(fecha,buenas,malas,neutra,total) VALUES('{fecha}',{total_positivo},{total_negativo},{total_neutro},{total_general} );")
+        conn.commit()
+        print(" analisis general completado")
+
 ciclo_scraping2()
-# Ejemplo de uso
-#titulares = scraping_meganoticias()
-#for e in titulares:
-#    print("----------------------")
-#    print(e)
-#determinar_contexto(titulares,"Soy chile")
 
 
