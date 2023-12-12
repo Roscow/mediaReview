@@ -85,10 +85,22 @@ def insertar_data(dic):
             print("...................................")
             print(f"Analizando {contador}/{total_titulares}")
             print(f"determinando contexto en : {e} ")
-            clasificacion = determinar_contexto_singular(e)
+            #clasificacion = determinar_contexto_singular(e)
+            respuesta_ia = determinar_contexto_singular2(e)
+            clasificacion = clasificar_titular(respuesta_ia)
             print(f"contexto: {clasificacion}")
             contexto = (f"SELECT id FROM contexto WHERE tipo ilike '{clasificacion}' ")
             cursor.execute(f"INSERT INTO noticia(medio_diario,titular,contexto ) VALUES({medio_diario},'{e}',({contexto}) );")
+
+
+            #insertar determinacion_ia
+            #obtener id de la noticia recien creada
+            cursor.execute(f"SELECT id FROM noticia WHERE medio_diario={medio_diario} and titular='{e}' ;")
+            id_noticia = cursor.fetchall()
+            id_noticia= id_noticia[0][0]
+            #insertar ia response 
+            cursor.execute(f"INSERT INTO determinacion_ia(noticia,respuesta ) VALUES({id_noticia},'{respuesta_ia}');")
+            
             conn.commit()
             contador=contador+1
 
@@ -1201,6 +1213,12 @@ def determinar_contexto_singular(titular):
     print(f"IA: {respuesta}")
     clasificacion = clasificar_titular(respuesta)
     return clasificacion
+
+def determinar_contexto_singular2(titular):
+    respuesta = obtener_respuesta_openai(titular)
+    print(f"IA: {respuesta}")
+    #clasificacion = clasificar_titular(respuesta)
+    return respuesta
 
 def contar_palabras2(palabra, cadena):
     palabra = palabra.lower()
