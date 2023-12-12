@@ -887,9 +887,16 @@ def eliminar_datos_posibles(datos,fecha):
         cursor.execute(f"SELECT id FROM medio_diario where medio=({subconsulta_medio}) and fecha='{fecha}' ;")
         datos = cursor.fetchall()
         medio_diario= datos[0][0]
-        #eliminar noticias
-        cursor.execute(f"DELETE FROM noticia where medio_diario={medio_diario};")
-        conn.commit()
+        cursor.execute(f"SELECT id FROM noticia WHERE medio_diario={medio_diario};")
+        data = cursor.fetchall()
+        for d in data:
+            #eliminar determinaciones_ia
+            id_noticia = d[0]
+            cursor.execute(f"DELETE FROM determinacion_ia where noticia={id_noticia};")
+            conn.commit()
+            #eliminar noticias
+            cursor.execute(f"DELETE FROM noticia where id={id_noticia};")
+            conn.commit()
         #eliminar medio diario
         cursor.execute(f"DELETE FROM medio_diario where id={medio_diario};")
         conn.commit()
