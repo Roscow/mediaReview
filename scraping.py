@@ -59,7 +59,7 @@ def verificar_palabras1(cadena):
 def verificar_listado(lista):
     lista_final = list()
     for e in lista:
-        cadena_limpia = e.replace('“', '').replace('”', '’').replace('‘', '').replace('’', '')
+        cadena_limpia = e.replace('“', ' ').replace('”', ' ').replace('‘', ' ').replace('’', ' ')
         verificado = verificar_palabras1(cadena_limpia)
         if (verificado == True):
             lista_final.append(e)
@@ -1258,7 +1258,7 @@ def ciclo_scraping3():
     lista_datos.append(datos)
 
     for e in lista_datos:
-        eliminar_data(e)
+        eliminar_data(e,fecha)
         insertar_data(e)
 
     tiempo_fin = time.time()
