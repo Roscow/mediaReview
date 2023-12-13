@@ -1236,7 +1236,7 @@ def ciclo_scraping3():
     except:
         print("no se agrego a lista")
 
-     try:        
+    try:        
         datos = scraping_elpais()
         lista_datos.append(datos)
     except:
