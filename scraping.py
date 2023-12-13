@@ -21,23 +21,31 @@ from datetime import datetime
 # Cargar variables de entorno desde el archivo .env
 load_dotenv()
 
-def conectar_bd():
-    host = os.getenv("HOST_DB")
-    database = os.getenv("DB_NAME")
-    user = os.getenv("DB_USER")
-    password = os.getenv("DB_PASSWORD")
-    conn = psycopg2.connect(host=host, database=database, user=user, password=password)
-    print("se realizo una conexion a la BD mediaReview")
-    return conn
-
-def limpiar_pantalla():
+#limpia la pantalla en los diferentes sistemas
+def limpiar_pantalla(time,mensaje):
     if os.name == 'nt':
         os.system('cls')
     # Comando específico para sistemas Unix/Linux
     else:
         os.system('clear')
+    print(mensaje)
+    sleep(time)
 
-def verificar_palabras(cadena):
+#conexion con la bd 
+def conectar_bd():
+    try:
+        host = os.getenv("HOST_DB")
+        database = os.getenv("DB_NAME")
+        user = os.getenv("DB_USER")
+        password = os.getenv("DB_PASSWORD")
+        conn = psycopg2.connect(host=host, database=database, user=user, password=password)
+        print("se realizo una conexion a la BD mediaReview")
+    except:
+        print("No fue posible conectar a la bd")
+    return conn
+
+#determina si la cadena tiene una, mas de una o cero palabras
+def verificar_palabras1(cadena):
     palabras = cadena.split()
     num_palabras = len(palabras)
     if num_palabras == 1:
@@ -47,84 +55,20 @@ def verificar_palabras(cadena):
     else:
         return "La cadena está vacía."
 
+#entrega un listado con titulares que fueron verificados que son oraciones
 def verificar_listado(lista):
     lista_final = list()
     for e in lista:
-        verificado = verificar_palabras(e)
+        cadena_limpia = e.replace('“', '').replace('”', '’').replace('‘', '').replace('’', '')
+        verificado = verificar_palabras1(cadena_limpia)
         if (verificado == True):
             lista_final.append(e)
     return lista_final
 
-def insertar_data(dic):
-    try:
-        titulares= dic.get('titulares')
-        link=dic.get('link')
-        data_scraping = dic.get('data_scraping')
-        print(f"Insertando datos en {link}")
-        conn = conectar_bd()
-        cursor = conn.cursor()
-
-        #insertar medio_diario
-        fecha = datetime.now()
-        cursor.execute(f"SELECT id FROM medio WHERE direccion_web='{link}' LIMIT 1;")
-        datos = cursor.fetchall()
-        medio= datos[0][0]
-        cursor.execute(f"INSERT INTO medio_diario(medio,fecha) VALUES({medio},'{fecha}');")
-        conn.commit()
-
-        #obtener el id del medio_diario recien creado
-        cursor.execute(f"SELECT id FROM medio_diario WHERE medio={medio} and fecha ='{fecha}' LIMIT 1;")
-        datos = cursor.fetchall()
-        medio_diario = datos[0][0]
-        total_titulares = len(titulares)
-        contador=1
-        #insertar noticias 
-        for e in titulares:
-            #determinar contexto
-            e = e.replace("'",'')
-            print("...................................")
-            print(f"Analizando {contador}/{total_titulares}")
-            print(f"determinando contexto en : {e} ")
-            #clasificacion = determinar_contexto_singular(e)
-            respuesta_ia = determinar_contexto_singular2(e)
-            clasificacion = clasificar_titular(respuesta_ia)
-            print(f"contexto: {clasificacion}")
-            contexto = (f"SELECT id FROM contexto WHERE tipo ilike '{clasificacion}' ")
-            cursor.execute(f"INSERT INTO noticia(medio_diario,titular,contexto ) VALUES({medio_diario},'{e}',({contexto}) );")
-
-
-            #insertar determinacion_ia
-            #obtener id de la noticia recien creada
-            cursor.execute(f"SELECT id FROM noticia WHERE medio_diario={medio_diario} and titular='{e}' ;")
-            id_noticia = cursor.fetchall()
-            id_noticia= id_noticia[0][0]
-            #insertar ia response 
-            cursor.execute(f"INSERT INTO determinacion_ia(noticia,respuesta ) VALUES({id_noticia},'{respuesta_ia}');")
-            
-            conn.commit()
-            contador=contador+1
-
-        #analisis diario
-        query_buenas = cursor.execute(f"SELECT COUNT(id) FROM noticia WHERE medio_diario={medio_diario} and contexto=(select id from contexto where tipo ilike 'positivo');")
-        datos = cursor.fetchall()
-        query_buenas= datos[0][0]
-        query_malas = cursor.execute(f"SELECT COUNT(id) FROM noticia WHERE medio_diario={medio_diario} and contexto=(select id from contexto where tipo ilike 'negativo');")
-        datos = cursor.fetchall()
-        query_malas= datos[0][0]
-        query_neutro = cursor.execute(f"SELECT COUNT(id) FROM noticia WHERE medio_diario={medio_diario} and contexto=(select id from contexto where tipo ilike 'neutro');")
-        datos = cursor.fetchall()
-        query_neutro= datos[0][0]
-        cursor.execute(f"INSERT INTO analisis_diario(medio,fecha,buenas,malas,neutra,total,data_scraping) VALUES({medio},'{fecha}',{query_buenas},{query_malas},{query_neutro},{total_titulares},{data_scraping});")
-        conn.commit()
-        cursor.close()
-        conn.close()
-    except Exception as e:
-        print(f"Error durante insertar data: {e}")
-
+#scrapings 
 def scraping_t13():   
     try:
-        limpiar_pantalla()
-        print("Iniciando scraping t13")
+        print("iniciando scraping t13")
         driver = webdriver.Firefox(options=options)
         url = "https://www.t13.cl"
         driver.get(url)
@@ -142,7 +86,7 @@ def scraping_t13():
         for e in card__title_list3:
             titulares.append(e.text)
         driver.quit()
-        print(f"total : {len(titulares)}")
+        print(f"el total de elementos scrapeados fue de : {len(titulares)}")
         print("finalizando scraping")
         sleep(10)
         datos_obtenidos= len(titulares)
@@ -154,7 +98,6 @@ def scraping_t13():
 
 def scraping_cooperativa():
     try:    
-        limpiar_pantalla()
         print("Iniciando scraping cooperativa")
         driver = webdriver.Firefox(options=options)
         url = "https://cooperativa.cl/"
@@ -203,7 +146,6 @@ def scraping_cooperativa():
 
 def scraping_24hrs():
     try:
-        limpiar_pantalla()
         print("Iniciando scraping 24hrs")
         driver = webdriver.Firefox(options=options)
         url = "https://www.24horas.cl/"
@@ -232,7 +174,6 @@ def scraping_24hrs():
 
 def scraping_dinamo():
     try:
-        limpiar_pantalla()
         print("Iniciando scraping el dinamo")
         driver = webdriver.Firefox(options=options)
         url = "https://www.eldinamo.cl/"
@@ -258,7 +199,6 @@ def scraping_dinamo():
 
 def scraping_cnnchile():
     try:
-        limpiar_pantalla()
         print("Iniciando scraping cnn chile")
         driver = webdriver.Firefox(options=options)
         url = "https://www.cnnchile.com/"
@@ -310,7 +250,6 @@ def scraping_cnnchile():
 
 def scraping_elpais():
     try:
-        limpiar_pantalla()
         print("Iniciando scraping el pais")
         driver = webdriver.Firefox(options=options)
         url = "https://elpais.com/noticias/chile/"
@@ -338,7 +277,6 @@ def scraping_elpais():
 
 def scraping_biobio():
     try:
-        limpiar_pantalla()
         print("Iniciando scraping biobio")
         driver = webdriver.Firefox(options=options)
         url = "https://www.biobiochile.cl/"
@@ -374,7 +312,6 @@ def scraping_biobio():
 
 def scraping_chilevisionNoticias():
     try:
-        limpiar_pantalla()
         print("Iniciando scraping chilevision noticias")
         driver = webdriver.Firefox(options=options)
         url = "https://www.chvnoticias.cl/"
@@ -423,7 +360,6 @@ def scraping_chilevisionNoticias():
 
 def scraping_ciper():
     try:
-        limpiar_pantalla()
         print("Iniciando scraping ciperchile")
         driver = webdriver.Firefox(options=options)
         url = "https://www.ciperchile.cl/"
@@ -452,7 +388,6 @@ def scraping_ciper():
     
 def scraping_soychile():
     try:
-        limpiar_pantalla()
         print("Iniciando scraping soy chile")
         driver = webdriver.Firefox(options=options)
         url = "https://www.soychile.cl/"
@@ -495,7 +430,6 @@ def scraping_soychile():
 
 def scraping_elmostrador():
     try:
-        limpiar_pantalla()
         print("Iniciando scraping elmostrador")
         driver = webdriver.Firefox(options=options)
         url = "https://www.elmostrador.cl/"
@@ -539,7 +473,6 @@ def scraping_elmostrador():
 
 def scraping_latercera():
     try:
-        limpiar_pantalla()
         print("Iniciando scraping la tercera")
         driver = webdriver.Firefox(options=options)
         url = "https://www.latercera.com/"
@@ -567,7 +500,6 @@ def scraping_latercera():
 
 def scraping_lacuarta():
     try:
-        limpiar_pantalla()
         print("Iniciando scraping la cuarta")
         driver = webdriver.Firefox(options=options)
         url = "https://www.lacuarta.com/"
@@ -603,7 +535,6 @@ def scraping_lacuarta():
 
 def scraping_emol():
     try:
-        limpiar_pantalla()
         print("Iniciando scraping el mercurio online")
         driver = webdriver.Firefox(options=options)
         url = "https://www.emol.com/"
@@ -707,7 +638,6 @@ def scraping_emol():
 
 def scraping_lasegunda():
     try:
-        limpiar_pantalla()
         print("Iniciando scraping la segunda")
         driver = webdriver.Firefox(options=options)
         url = "https://impresa.lasegunda.com/"
@@ -737,7 +667,6 @@ def scraping_lasegunda():
         print(f"no se pudo hacer scraping en lasegunda por {e}")
 #pendiente
 def scraping_lun():
-    limpiar_pantalla()
     print("Iniciando scraping LUN")
     driver = webdriver.Firefox(options=options)
     url = "https://www.lun.com/"
@@ -763,7 +692,6 @@ def scraping_lun():
    
 def scraping_df():
     try:
-        limpiar_pantalla()
         print("Iniciando scraping diario financiero")
         driver = webdriver.Firefox(options=options)
         url = "https://www.df.cl/"
@@ -814,7 +742,6 @@ def scraping_df():
 
 def scraping_meganoticias():
     try:
-        limpiar_pantalla()
         print("Iniciando scraping meganoticias")
         driver = webdriver.Firefox(options=options)
         url = "https://www.meganoticias.cl/"
@@ -840,15 +767,94 @@ def scraping_meganoticias():
     except Exception as e:
         print(f"no se pudo hacer scraping en meganoticias por {e}")
       
-def main():
-    #aqui voy a correr cada uno de los scripts por pagina
-    print("INICIANDO SCRAPING")
-    sleep(10)
-    titulares = scraping_t13()
+#obtener noticias para un medio
+def obtener_noticias_medio_diario(medio_diario):
+    conn = conectar_bd()
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT id FROM noticia where medio_diario={medio_diario};")
+    lista_noticias = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return lista_noticias
+
+#obtener determinacion_ia para una noticia
+def obtener_determinacion_id(noticia_id):
+    conn = conectar_bd()
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT id FROM determinacion_ia where noticia={noticia_id};")
+    data= cursor.fetchall()
+    determinacion = data[0][0]
+    cursor.close()
+    conn.close()
+    return determinacion
+
+#obtener un medio_diario para una fecha y para un medio
+def obtener_medio_diario(fecha, medio):
+    conn = conectar_bd()
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT id FROM medio_diario where medio={medio} and fecha='{fecha}' ;")
+    datos = cursor.fetchall()
+    medio_diario= datos[0][0]
+    cursor.close()
+    conn.close()
+    return medio_diario
+
+#obtener un medio con un link
+def obtener_medio(link):
+    subconsulta_medio = (f"select id from medio where direccion_web='{link}';")
+    conn = conectar_bd()
+    cursor = conn.cursor()
+    cursor.execute(subconsulta_medio)
+    datos = cursor.fetchall()
+    medio= datos[0][0]
+    cursor.close()
+    conn.close()
+    return medio
+
+#eliminar determinaciones 
+def eliminar_determinaciones(lista_noticias,conexion):
+    cur = conexion.cursor()
+    for d in lista_noticias:
+        cur.execute(f"DELETE FROM determinacion_ia where noticia ={d[0]};")
+        print(f"eliminando determinacion con noticia id {d[0]}")
+        conexion.commit()
+    cur.close()
+
+#eliminar medio diario
+def eliminar_medio_diario(medio,fecha,conexion):
+    try:
+        cur = conexion.cursor()
+        cur.execute(f"select id from medio_diario where medio={medio} and fecha='{fecha}';")
+        data = cur.fetchall()
+        id_medio_diario = data[0][0]
+        cur.execute(f"DELETE FROM medio_diario where id ={id_medio_diario};")
+        conexion.commit()
+        cur.close()
+        print(f"se elimino medio diario id ={id_medio_diario}")
+    except:
+        print(f"no se pudo eliminar medio diario")
+
+#eliminar noticias
+def eliminar_noticias(medio_diario,conexion):
+    cur = conexion.cursor()
+    cur.execute(f"delete from noticia WHERE medio_diario={medio_diario} ;")
+    conexion.commit()
+    cur.close()
+
+#eliminar datos
+def eliminar_data(datos,fecha):
+    conn = conectar_bd()
+    link=datos.get("link")
+    medio = obtener_medio(link)
+    medio_diario = obtener_medio_diario(fecha,medio)
+    lista_noticias = obtener_noticias_medio_diario(medio_diario)
+    eliminar_determinaciones(lista_noticias,conn)
+    eliminar_noticias(medio_diario,conn)
+    eliminar_medio_diario(medio,fecha,conn)
+    conn.close()
 
 def verificar_integridad(datos, fecha):
     try:
-        
         #obtener los datos titulares de scraping
         titulares= datos.get('titulares')
         total_datos_scraping = len(titulares)
@@ -874,9 +880,9 @@ def verificar_integridad(datos, fecha):
         else:
             print("datos validados")
             return True
-    except:
-        print("datos no fueron validados")
-        return False
+    except Exception as e:
+        print(f"datos no fueron validados por {e}")
+        return True
 
 def eliminar_datos_posibles(datos,fecha):
     try:
@@ -888,20 +894,36 @@ def eliminar_datos_posibles(datos,fecha):
         datos = cursor.fetchall()
         medio_diario= datos[0][0]
         cursor.execute(f"SELECT id FROM noticia WHERE medio_diario={medio_diario};")
-        data = cursor.fetchall()
-        for d in data:
-            #eliminar determinaciones_ia
+        noticias = cursor.fetchall()
+        lista_determinaciones=list()
+
+        for d in noticias:
             id_noticia = d[0]
-            cursor.execute(f"DELETE FROM determinacion_ia where noticia={id_noticia};")
+            cursor.execute(f"select id FROM determinacion_ia where noticia={id_noticia};")
+            datos = cursor.fetchall()
+            if(len(datos)>0):
+                id_determinacion = datos[0][0]
+                lista_determinaciones.append(id_determinacion)
             conn.commit()
             #eliminar noticias
-            cursor.execute(f"DELETE FROM noticia where id={id_noticia};")
-            conn.commit()
+            print(f"eliminando noticia con id {id_noticia}")
+
+        for det in lista_determinaciones:
+            cursor.execute(f"delete from determinacion_ia where id={det}")
+            print(f"se elimino determinacion_ia para id {det} ")
+        conn.commit()
+        for d in noticias:
+            cursor.execute(f"delete from noticia where id={d[0]}")
+            print(f"se elimino noticia para noticia {d[0]} ")
+        conn.commit()    
+
         #eliminar medio diario
         cursor.execute(f"DELETE FROM medio_diario where id={medio_diario};")
+        print(f"se elimino medio_diario para id {medio_diario} ")
         conn.commit()
         #eliminar analisis diario
         cursor.execute(f"DELETE FROM analisis_diario where medio = ({subconsulta_medio}) and fecha ='{fecha}' ;")
+        print(f"se elimino analisis_diario para medio {subconsulta_medio} ")
         conn.commit()
         print(f"datos eliminados para {link} en {fecha}")
     except Exception as e:
@@ -1179,27 +1201,78 @@ def ciclo_scraping2():
     print(f"tiempo transcurrido: {tiempo_total}")
 
 def ciclo_scraping3():
-    codigo_ejecutar = list()
     fecha = datetime.now()
     tiempo_inicio = time.time()
-    for e in range(1):
-        codigo_ejecutar.append(e)
-    while(len(codigo_ejecutar)>0 ):
-        print(f"codigo a ejecutar: {codigo_ejecutar}")
-        sleep(3)
-        #recorrer el arreglo
-        if(0 in codigo_ejecutar):
-            datos= scraping_t13()
-            if(verificar_integridad(datos,fecha)==False):
-                eliminar_datos_posibles(datos,fecha)
-                insertar_data(datos)
-            else:
-                codigo_ejecutar.remove(0)
+    print("Iniciando nuevo ciclo de scraping ")
+    lista_datos = list()
+
+    datos= scraping_t13()
+    lista_datos.append(datos)
+    
+    datos = scraping_cooperativa()
+    lista_datos.append(datos)
+
+    datos = scraping_24hrs()
+    lista_datos.append(datos)
+
+    datos = scraping_dinamo()
+    lista_datos.append(datos)
+                
+    datos = scraping_cnnchile()
+    lista_datos.append(datos)
+         
+    datos = scraping_elpais()
+    lista_datos.append(datos)
+                
+    datos = scraping_biobio()
+    lista_datos.append(datos)
+
+    datos = scraping_chilevisionNoticias()
+    lista_datos.append(datos)
+
+    datos = scraping_ciper()
+    lista_datos.append(datos)
+
+    datos = scraping_soychile()
+    lista_datos.append(datos)
+
+    datos = scraping_elmostrador()
+    lista_datos.append(datos)
+
+    datos = scraping_latercera()
+    lista_datos.append(datos)
+
+    datos = scraping_lacuarta()
+    lista_datos.append(datos)
+
+    datos = scraping_emol()
+    lista_datos.append(datos)
+
+    datos = scraping_lasegunda()
+    lista_datos.append(datos)
+
+    datos = scraping_df()
+    lista_datos.append(datos)
+
+    datos = scraping_meganoticias()
+    lista_datos.append(datos)
+
+    for e in lista_datos:
+        eliminar_data(e)
+        insertar_data(e)
+
     tiempo_fin = time.time()
     tiempo_total = tiempo_fin - tiempo_inicio
-    #consultar
     realizar_analisis_general(fecha)
     print(f"tiempo transcurrido: {tiempo_total}")
+
+def ciclo_scraping4():
+    fecha = datetime.now()
+    print("Iniciando nuevo ciclo de scraping ")
+    datos3 = scraping_24hrs()
+    if(verificar_integridad(datos3,fecha)==False):
+        eliminar_data(datos3,fecha)
+        insertar_data(datos3)
 
 def determinar_contexto(titulares,nombreMedio):
     print(f"Verificando contexto de titulares en {nombreMedio}")
@@ -1269,16 +1342,6 @@ def obtener_respuesta_openai(prompt):
     else:
         return f"Error en la solicitud: {response.status_code} - {response.text}"
 
-def llenar_datos(nombre, titulares):
-    conn = conectar_bd()
-    cursor = conn.cursor()
-    for e in titulares:
-
-        sql_insert = "INSERT INTO noticia (nombre, edad) VALUES (%s, %s)"
-        cursor.execute(sql_insert, (nombre, edad))
-        conn.commit()
-        cursor.close()
-
 def realizar_analisis_general(fecha):
     print("realizando analisis general")
     conn = conectar_bd()
@@ -1340,6 +1403,75 @@ def realizar_analisis_general(fecha):
         conn.commit()
         print(" analisis general completado")
 
-ciclo_scraping2()
+def insertar_data(dic):
+    try:
+        titulares= dic.get('titulares')
+        link=dic.get('link')
+        data_scraping = dic.get('data_scraping')
+        print(f"Insertando datos en {link}")
+        conn = conectar_bd()
+        cursor = conn.cursor()
+
+        #insertar medio_diario
+        fecha = datetime.now()
+        cursor.execute(f"SELECT id FROM medio WHERE direccion_web='{link}' LIMIT 1;")
+        datos = cursor.fetchall()
+        medio= datos[0][0]
+        cursor.execute(f"INSERT INTO medio_diario(medio,fecha) VALUES({medio},'{fecha}');")
+        print(f"se inserto medio diario :  {medio} , {fecha}")
+        conn.commit()
+
+        #obtener el id del medio_diario recien creado
+        cursor.execute(f"SELECT id FROM medio_diario WHERE medio={medio} and fecha ='{fecha}' LIMIT 1;")
+        datos = cursor.fetchall()
+        medio_diario = datos[0][0]
+        total_titulares = len(titulares)
+        #insertar noticias 
+        contador=1
+        for e in titulares:
+            #determinar contexto
+            e = e.replace("'",'')
+            e = e.replace("´",'')
+            e = e.replace("`",'')
+            print("...................................")
+            print(f"Analizando {contador}/{total_titulares}")
+            print(f"determinando contexto en : {e} ")
+            #clasificacion = determinar_contexto_singular(e)
+            respuesta_ia = determinar_contexto_singular2(e)
+            clasificacion = clasificar_titular(respuesta_ia)
+            print(f"contexto: {clasificacion}")
+            contexto = (f"SELECT id FROM contexto WHERE tipo ilike '{clasificacion}' ")
+            cursor.execute(f"INSERT INTO noticia(medio_diario,titular,contexto ) VALUES({medio_diario},'{e}',({contexto}) );")
+            print(f"se inserto noticia con medio_diario {medio_diario}")
+            conn.commit()
+            contador=contador+1
+
+            #obtener id de la noticia recien creada
+            cursor.execute(f"SELECT id FROM noticia WHERE medio_diario={medio_diario} and titular='{e}' ;")
+            id_noticia = cursor.fetchall()
+            id_noticia= id_noticia[0][0]
+            #insertar ia response 
+            cursor.execute(f"INSERT INTO determinacion_ia(noticia,respuesta ) VALUES({id_noticia},'{respuesta_ia}');")
+            print(f"se inserto determinacion con {id_noticia}, {respuesta_ia}")
+            conn.commit()
+
+        #analisis diario
+        query_buenas = cursor.execute(f"SELECT COUNT(id) FROM noticia WHERE medio_diario={medio_diario} and contexto=(select id from contexto where tipo ilike 'positivo');")
+        datos = cursor.fetchall()
+        query_buenas= datos[0][0]
+        query_malas = cursor.execute(f"SELECT COUNT(id) FROM noticia WHERE medio_diario={medio_diario} and contexto=(select id from contexto where tipo ilike 'negativo');")
+        datos = cursor.fetchall()
+        query_malas= datos[0][0]
+        query_neutro = cursor.execute(f"SELECT COUNT(id) FROM noticia WHERE medio_diario={medio_diario} and contexto=(select id from contexto where tipo ilike 'neutro');")
+        datos = cursor.fetchall()
+        query_neutro= datos[0][0]
+        cursor.execute(f"INSERT INTO analisis_diario(medio,fecha,buenas,malas,neutra,total,data_scraping) VALUES({medio},'{fecha}',{query_buenas},{query_malas},{query_neutro},{total_titulares},{data_scraping});")
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        print(f"Error durante insertar data: {e}")
+
+ciclo_scraping3()
 
 
