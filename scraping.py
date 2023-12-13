@@ -1206,56 +1206,107 @@ def ciclo_scraping3():
     print("Iniciando nuevo ciclo de scraping ")
     lista_datos = list()
 
-    datos= scraping_t13()
-    lista_datos.append(datos)
+    try:
+        datos= scraping_t13()
+        lista_datos.append(datos)
+    except:
+        print("no se agrego a lista")
+
+    try: 
+        datos = scraping_cooperativa()
+        lista_datos.append(datos)
+    except:
+        print("no se agrego a lista")
+
+    try:
+        datos = scraping_24hrs()
+        lista_datos.append(datos)
+    except:
+        print("no se agrego a lista")    
+
+    try:
+        datos = scraping_dinamo()
+        lista_datos.append(datos)
+    except:
+        print("no se agrego a lista")
     
-    datos = scraping_cooperativa()
-    lista_datos.append(datos)
+    try:        
+        datos = scraping_cnnchile()
+        lista_datos.append(datos)
+    except:
+        print("no se agrego a lista")
 
-    datos = scraping_24hrs()
-    lista_datos.append(datos)
+     try:        
+        datos = scraping_elpais()
+        lista_datos.append(datos)
+    except:
+        print("no se agrego a lista")
 
-    datos = scraping_dinamo()
-    lista_datos.append(datos)
-                
-    datos = scraping_cnnchile()
-    lista_datos.append(datos)
-         
-    datos = scraping_elpais()
-    lista_datos.append(datos)
-                
-    datos = scraping_biobio()
-    lista_datos.append(datos)
+    try:                
+        datos = scraping_biobio()
+        lista_datos.append(datos)
+    except:
+        print("no se agrego a lista")
 
-    datos = scraping_chilevisionNoticias()
-    lista_datos.append(datos)
+    try:
+        datos = scraping_chilevisionNoticias()
+        lista_datos.append(datos)
+    except:
+        print("no se agrego a lista")
 
-    datos = scraping_ciper()
-    lista_datos.append(datos)
+    try:
+        datos = scraping_ciper()
+        lista_datos.append(datos)
+    except:
+        print("no se agrego a lista")
 
-    datos = scraping_soychile()
-    lista_datos.append(datos)
+    try:
+        datos = scraping_soychile()
+        lista_datos.append(datos)
+    except:
+        print("no se agrego a lista")
 
-    datos = scraping_elmostrador()
-    lista_datos.append(datos)
+    try:
+        datos = scraping_elmostrador()
+        lista_datos.append(datos)
+    except:
+        print("no se agrego a lista")
 
-    datos = scraping_latercera()
-    lista_datos.append(datos)
+    try:
+        datos = scraping_latercera()
+        lista_datos.append(datos)
+    except:
+        print("no se agrego a lista")
 
-    datos = scraping_lacuarta()
-    lista_datos.append(datos)
+    try:
+        datos = scraping_lacuarta()
+        lista_datos.append(datos)
+    except:
+        print("no se agrego a lista")
 
-    datos = scraping_emol()
-    lista_datos.append(datos)
+    try:
+        datos = scraping_emol()
+        lista_datos.append(datos)
+    except:
+        print("no se agrego a lista")
 
-    datos = scraping_lasegunda()
-    lista_datos.append(datos)
+    try:
+        datos = scraping_lasegunda()
+        lista_datos.append(datos)
+    except:
+        print("no se agrego a lista")
 
-    datos = scraping_df()
-    lista_datos.append(datos)
+    try:
+        datos = scraping_df()
+        lista_datos.append(datos)
+    except:
+        print("no se agrego a lista")
 
-    datos = scraping_meganoticias()
-    lista_datos.append(datos)
+    try:
+        datos = scraping_meganoticias()
+        lista_datos.append(datos)
+    except:
+        print("no se agrego a lista")
 
     for e in lista_datos:
         eliminar_data(e,fecha)
