@@ -59,7 +59,7 @@ def verificar_palabras1(cadena):
 def verificar_listado(lista):
     lista_final = list()
     for e in lista:
-        cadena_limpia = e.replace('“', ' ').replace('”', ' ').replace('‘', ' ').replace('’', ' ')
+        cadena_limpia = e.replace('“', ' ').replace('”', ' ').replace('‘', ' ').replace('’', ' ').replace("'",'')
         verificado = verificar_palabras1(cadena_limpia)
         if (verificado == True):
             lista_final.append(e)
@@ -794,11 +794,13 @@ def obtener_medio_diario(fecha, medio):
     cursor = conn.cursor()
     cursor.execute(f"SELECT id FROM medio_diario where medio={medio} and fecha='{fecha}' ;")
     datos = cursor.fetchall()
-    medio_diario= datos[0][0]
     cursor.close()
     conn.close()
-    return medio_diario
-
+    if(len(datos)>0):
+        medio_diario= datos[0][0]
+        return medio_diario
+    else:
+        return False
 #obtener un medio con un link
 def obtener_medio(link):
     subconsulta_medio = (f"select id from medio where direccion_web='{link}';")
@@ -847,10 +849,11 @@ def eliminar_data(datos,fecha):
     link=datos.get("link")
     medio = obtener_medio(link)
     medio_diario = obtener_medio_diario(fecha,medio)
-    lista_noticias = obtener_noticias_medio_diario(medio_diario)
-    eliminar_determinaciones(lista_noticias,conn)
-    eliminar_noticias(medio_diario,conn)
-    eliminar_medio_diario(medio,fecha,conn)
+    if(medio_diario):
+        lista_noticias = obtener_noticias_medio_diario(medio_diario)
+        eliminar_determinaciones(lista_noticias,conn)
+        eliminar_noticias(medio_diario,conn)
+        eliminar_medio_diario(medio,fecha,conn)
     conn.close()
 
 def verificar_integridad(datos, fecha):
@@ -866,10 +869,13 @@ def verificar_integridad(datos, fecha):
         subconsulta_medio = (f"select id from medio where direccion_web='{link}'")
         cursor.execute(f"SELECT id FROM medio_diario where medio=({subconsulta_medio}) and fecha='{fecha}' ;")
         datos = cursor.fetchall()
-        medio_diario= datos[0][0]
-        cursor.execute(f"SELECT count(id) FROM noticia where medio_diario={medio_diario};")
-        datos = cursor.fetchall()
-        datos_insertados= datos[0][0]
+        if(len(datos)>0):
+            medio_diario= datos[0][0]
+            cursor.execute(f"SELECT count(id) FROM noticia where medio_diario={medio_diario};")
+            datos = cursor.fetchall()
+            datos_insertados= datos[0][0]
+        else:
+            datos_insertados=0
         cursor.close()
         conn.close()
         #comparar ambos
@@ -1319,11 +1325,98 @@ def ciclo_scraping3():
 
 def ciclo_scraping4():
     fecha = datetime.now()
+    tiempo_inicio = time.time()
     print("Iniciando nuevo ciclo de scraping ")
-    datos3 = scraping_24hrs()
-    if(verificar_integridad(datos3,fecha)==False):
-        eliminar_data(datos3,fecha)
-        insertar_data(datos3)
+
+    datos = scraping_t13()
+    if(verificar_integridad(datos,fecha)==False):
+        eliminar_data(datos,fecha)
+        insertar_data(datos)
+
+    datos = scraping_cooperativa()
+    if(verificar_integridad(datos,fecha)==False):
+        eliminar_data(datos,fecha)
+        insertar_data(datos)
+
+    datos = scraping_dinamo()
+    if(verificar_integridad(datos,fecha)==False):
+        eliminar_data(datos,fecha)
+        insertar_data(datos)
+
+    datos = scraping_24hrs()
+    if(verificar_integridad(datos,fecha)==False):
+        eliminar_data(datos,fecha)
+        insertar_data(datos)
+
+    datos = scraping_cnnchile()
+    if(verificar_integridad(datos,fecha)==False):
+        eliminar_data(datos,fecha)
+        insertar_data(datos)
+
+    datos = scraping_elpais()
+    if(verificar_integridad(datos,fecha)==False):
+        eliminar_data(datos,fecha)
+        insertar_data(datos)
+
+    datos = scraping_biobio()
+    if(verificar_integridad(datos,fecha)==False):
+        eliminar_data(datos,fecha)
+        insertar_data(datos)
+
+    datos = scraping_chilevisionNoticias()
+    if(verificar_integridad(datos,fecha)==False):
+        eliminar_data(datos,fecha)
+        insertar_data(datos)
+
+    datos = scraping_ciper()
+    if(verificar_integridad(datos,fecha)==False):
+        eliminar_data(datos,fecha)
+        insertar_data(datos)
+
+    datos = scraping_soychile()
+    if(verificar_integridad(datos,fecha)==False):
+        eliminar_data(datos,fecha)
+        insertar_data(datos)
+
+    datos = scraping_elmostrador()
+    if(verificar_integridad(datos,fecha)==False):
+        eliminar_data(datos,fecha)
+        insertar_data(datos)
+
+    datos = scraping_latercera()
+    if(verificar_integridad(datos,fecha)==False):
+        eliminar_data(datos,fecha)
+        insertar_data(datos)
+
+    datos = scraping_lacuarta()
+    if(verificar_integridad(datos,fecha)==False):
+        eliminar_data(datos,fecha)
+        insertar_data(datos)
+
+    datos = scraping_emol()
+    if(verificar_integridad(datos,fecha)==False):
+        eliminar_data(datos,fecha)
+        insertar_data(datos)
+
+    datos = scraping_lasegunda()
+    if(verificar_integridad(datos,fecha)==False):
+        eliminar_data(datos,fecha)
+        insertar_data(datos)
+
+    datos = scraping_df()
+    if(verificar_integridad(datos,fecha)==False):
+        eliminar_data(datos,fecha)
+        insertar_data(datos)
+
+    datos = scraping_meganoticias()
+    if(verificar_integridad(datos,fecha)==False):
+        eliminar_data(datos,fecha)
+        insertar_data(datos)
+
+    tiempo_fin = time.time()
+    tiempo_total = tiempo_fin - tiempo_inicio
+    realizar_analisis_general(fecha)
+    print(f"tiempo transcurrido: {tiempo_total}")
 
 def determinar_contexto(titulares,nombreMedio):
     print(f"Verificando contexto de titulares en {nombreMedio}")
@@ -1341,6 +1434,7 @@ def determinar_contexto(titulares,nombreMedio):
 
 def determinar_contexto_singular(titular):
     respuesta = obtener_respuesta_openai(titular)
+    respuesta  = respuesta.replace('“', ' ').replace('”', ' ').replace('‘', ' ').replace('’', ' ').replace("'",'')
     print(f"IA: {respuesta}")
     clasificacion = clasificar_titular(respuesta)
     return clasificacion
@@ -1385,7 +1479,7 @@ def obtener_respuesta_openai(prompt):
     }
     data = {
         "model": "gpt-3.5-turbo",  # Modelo específico de ChatGPT
-        "messages": [{"role": "system", "content": "Eres un asistente que determinara si un titular de noticia tiene un contexto negativo, positivo o neutro. responder concreta y brevemente"}, {"role": "user", "content": prompt}],
+        "messages": [{"role": "system", "content": "Eres un asistente que determinara si un titular de noticia tiene un contexto negativo, positivo o neutro para poblacion chilena. responder concreta y brevemente"}, {"role": "user", "content": prompt}],
     }
     response = requests.post(url, json=data, headers=headers)
     if response.status_code == 200:
@@ -1406,7 +1500,7 @@ def realizar_analisis_general(fecha):
     subconsulta_medio_diario =(f"SELECT id FROM medio_diario WHERE fecha= '{fecha}'")
     # Verificar si hay resultados
     if resultados:  
-        id_analisis = resultados[0]
+        id_analisis = resultados[0][0]
         print("analisis ya existe para esa fecha")
         cursor.execute(f"delete from analisis_general where id={id_analisis};")
         print("se elimino registro existente")
@@ -1523,6 +1617,8 @@ def insertar_data(dic):
     except Exception as e:
         print(f"Error durante insertar data: {e}")
 
-ciclo_scraping3()
+#fecha = datetime.now()
+#realizar_analisis_general(fecha);
+ciclo_scraping4()
 
 
